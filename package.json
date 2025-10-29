@@ -10,6 +10,8 @@
       "format": "biome format --write"
    },
    "dependencies": {
+      "@clerk/nextjs": "^6.34.0",
+      "@microsoft/fetch-event-source": "^2.0.1",
       "@openai/agents": "^0.2.1",
       "@tailwindcss/typography": "^0.5.19",
       "hono": "^4.10.3",

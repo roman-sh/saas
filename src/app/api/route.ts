@@ -1,12 +1,12 @@
 import { Hono } from "hono"
 import { streamSSE } from "hono/streaming"
 import { Agent, run } from "@openai/agents"
-
+import { auth } from "@clerk/nextjs/server"
 
 // Create the agent using OpenAI's Agents SDK
 const agent = new Agent({
    name: "Assistant",
-   model: "gpt-5-mini",
+   model: "gpt-5-nano",
 })
 
 /**
@@ -33,7 +33,7 @@ app.get("*", async (c) => {
       const result = await run(
          agent,
          "Reply with a new concise business idea for AI Agents, formatted with headings, sub-headings and bullet points (use markdown formatting)",
-         { stream: true }
+         { stream: true },
       )
 
       // Stream plain text chunks instead of event objects
@@ -44,7 +44,10 @@ app.get("*", async (c) => {
          const data =
             typeof chunk === "string" ? chunk : new TextDecoder().decode(chunk)
          if (data) {
-            await stream.writeSSE({ data })
+            // By wrapping the data in a JSON object, we ensure that newline
+            // characters are preserved as `\n` strings and not interpreted
+            // by the SSE parser.
+            await stream.writeSSE({ data: JSON.stringify({ chunk: data }) })
          }
       }
 
@@ -60,6 +63,10 @@ app.get("*", async (c) => {
  * @returns {Promise<Response>} A standard Web API `Response` object returned by Hono.
  */
 export async function GET(req: Request) {
+   const { userId } = await auth()
+   if (!userId) {
+      return new Response("Unauthorized", { status: 401 })
+   }
    // `app.fetch(req)` delegates the request to the Hono instance. Hono's router
    // matches the request against its own routes (in this case, `app.get("*")`)
    // and returns a standard `Response` object, which Next.js can then send to the client.
