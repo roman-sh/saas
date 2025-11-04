@@ -32,7 +32,7 @@ export default function Product() {
           * browser's native `EventSource`. It supports features like sending headers,
           * which is necessary for our authenticated API endpoint.
           */
-         await fetchEventSource("/api", {
+         await fetchEventSource("/api/idea", {
             headers: { Authorization: `Bearer ${jwt}` },
             // We pass the AbortController's signal to the request. If ctrl.abort() is called,
             // this fetch request will be immediately cancelled.

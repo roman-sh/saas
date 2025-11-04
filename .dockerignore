@@ -1,0 +1,14 @@
+# Build artifacts
+.next
+node_modules
+.env*
+
+# Version control
+.git
+.gitignore
+
+# OS-specific
+.DS_Store
+
+# Logs
+*.log
